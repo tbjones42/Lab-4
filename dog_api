@@ -1,0 +1,45 @@
+import requests
+
+BASE_URL = "https://dog.ceo/api"
+
+
+def _get_json(endpoint: str) -> dict:
+    """
+    Internal helper function to send GET request
+    and return parsed JSON.
+    """
+    url = f"{BASE_URL}{endpoint}"
+    response = requests.get(url, timeout=10)
+    response.raise_for_status()
+
+    data = response.json()
+
+    if data.get("status") != "success":
+        raise ValueError("API returned non-success status.")
+
+    return data
+
+
+def list_all_breeds() -> dict:
+    """
+    Returns dictionary of all breeds and sub-breeds.
+    """
+    data = _get_json("/breeds/list/all")
+    return data["message"]
+
+
+def random_image_any() -> str:
+    """
+    Returns URL string for a random dog image.
+    """
+    data = _get_json("/breeds/image/random")
+    return data["message"]
+
+
+def random_image_by_breed(breed: str) -> str:
+    """
+    Returns random image URL for a specific breed.
+    """
+    endpoint = f"/breed/{breed}/images/random"
+    data = _get_json(endpoint)
+    return data["message"]
